@@ -5,15 +5,18 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Sketch</title>
+  <title>Escape Room</title>
 
   <link rel="stylesheet" type="text/css" href="style.css">
 
   <script src="libraries/p5.min.js"></script>
   <script src="libraries/p5.sound.min.js"></script>
+  <script src="sketch.js"></script>
+  <script src="gemini.js" type="module"></script>
 </head>
 
 <body>
+  <h1>Escape Room</h1>
 
   <div class="sketchfab-embed-wrapper">
     <iframe title="Old Orthodox Church in Suzdal (inside & outside)" frameborder="0" allowfullscreen
@@ -23,15 +26,16 @@
       src="https://sketchfab.com/models/482bb6ceb53a413193c36e560885262e/embed?annotations_visible=1&annotation=1&ui_theme=dark">
     </iframe>
   </div>
+  <p></p>
 
-  <label for="email">Email:</label>
-  <input type="email" id="email">
-  <label for="pwd">Password:</label>
-  <input type="password" id="pwd">
-  <input type="submit" id="submit">
+  <label for="email" class="auth">Email:</label>
+  <input type="email" id="email" class="auth">
+  <label for="pwd" class="auth">Password:</label>
+  <input type="password" id="pwd" class="auth">
+  <input type="submit" id="submit" class="auth">
 
-  <script src="sketch.js" type="module"></script>
-  
+
+
 </body>
 
 </html>

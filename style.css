@@ -3,6 +3,11 @@ html, body {
   padding: 0;
 }
 
+div {
+  display: flex;
+  justify-content: center;
+}
+
 canvas {
   display: block;
 }
