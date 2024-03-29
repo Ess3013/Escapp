@@ -1,36 +1,13 @@
-// //#region module
-// import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
-// // Fetch your API_KEY
-// const API_KEY = "AIzaSyBBnnMxEha01UMoT40vJDVrDlpn6wuE5fc";
-
-// // Access your API key (see "Set up your API key" above)
-// const genAI = new GoogleGenerativeAI(API_KEY);
-
-// async function run(inPrompt) {
-//   // For text-only input, use the gemini-pro model
-//   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-//   const prompt = inPrompt;
-//   const result = await model.generateContent(prompt);
-//   const response = await result.response;
-//   const text = response.text();
-//   return text;
-// }
-
-// //#endregion
-
-
 function setup() {
   noCanvas();
   var email = select('#email');
   var password = select('#pwd');
   var signIn = select('#submit');
-  signIn.mousePressed(() => escappStart(80, email, password))
+  signIn.mousePressed(() => escappStart(80, email, password));
   createElement("h3", "Solve the puzzles to escape.");
 
   let puzzle1 = createPuzzle("The key to escape is to look up and count. ");
-  puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password)) //Check thisssssssss
+  puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password));
 
   let puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
   puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
