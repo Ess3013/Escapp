@@ -1,45 +1,54 @@
-// //#region module
-// import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
-
-// // Fetch your API_KEY
-// const API_KEY = "AIzaSyBBnnMxEha01UMoT40vJDVrDlpn6wuE5fc";
-
-// // Access your API key (see "Set up your API key" above)
-// const genAI = new GoogleGenerativeAI(API_KEY);
-
-// async function run(inPrompt) {
-//   // For text-only input, use the gemini-pro model
-//   const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-
-//   const prompt = inPrompt;
-//   const result = await model.generateContent(prompt);
-//   const response = await result.response;
-//   const text = response.text();
-//   return text;
-// }
-
-// //#endregion
-
+let email, password, signIn, puzzle1, puzzle2, time, progress;
 
 function setup() {
+  email = select('#email');
+  password = select('#pwd');
+  signIn = select('#submit');
   noCanvas();
-  var email = select('#email');
-  var password = select('#pwd');
-  var signIn = select('#submit');
-  signIn.mousePressed(() => escappStart(80, email, password))
+  signIn.mousePressed(() => escappStart(80, email, password));
   createElement("h3", "Solve the puzzles to escape.");
 
-  let puzzle1 = createPuzzle("The key to escape is to look up and count. ");
-  puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password)) //Check thisssssssss
-
-  let puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
+  puzzle1 = createPuzzle("The key to escape is to look up and count. ");
+  puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password));
+  puzzle1.hint.mousePressed(() => puzzle1.message.html('Count the paintings on ceilings.'))
+  puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
   puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
+  puzzle2.hint.mousePressed(() => puzzle2.message.html('Look for a place where the bishop stays during worship.'))
+
+  createSpan('Remaining time: ');
+  time = createElement('b', 'time')
+  setInterval(() => {
+    if (password.value()) {
+      escappAuth(80, email, password);
+    }
+  }, 1000);
 
 }
 
 
+function escappAuth(roomNumber, email, password) {
+  const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/auth";
+  var response;
+  fetch(URI, {
+    method: "POST",
+    body: JSON.stringify({
+      email: email.value(),
+      password: password.value(),
+    }),
+    headers: {
+      "Content-type": "application/json",
+      "Accept-Language": "es-ES",
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => {
+      console.log(res); 
+      time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes')
+    });
+}
 function escappStart(roomNumber, email, password) {
   const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/start";
+  var response;
   fetch(URI, {
     method: "POST",
     body: JSON.stringify({
@@ -55,16 +64,17 @@ function escappStart(roomNumber, email, password) {
     .then((res) => console.log(res));
 }
 
+
 function createPuzzle(prompt) {
-  let puzzle = createElement('span',prompt);
+  let puzzle = createElement('span', prompt);
   let input = createInput();
   let button = createButton("submit");
+  let hint = createButton('hint')
   let message = createSpan();
   createP();
-
-
-  return { input: input, button: button, message: message, puzzle: puzzle };
+  return { puzzle: puzzle, input: input, button: button, hint: hint, message: message };
 }
+
 
 function solve(puzzleNum, input, text, email, password) {
   const solution = input;
@@ -85,5 +95,3 @@ function solve(puzzleNum, input, text, email, password) {
     .then((res) => res.json())
     .then((res) => { console.log(res); text.html(res.msg) });
 }
-
-
