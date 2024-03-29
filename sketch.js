@@ -12,13 +12,12 @@ function setup() {
   let puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
   puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
 
-
-  setInterval(()=>console.log('hello', 2000))
 }
 
 
 function escappStart(roomNumber, email, password) {
   const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/start";
+  var response;
   fetch(URI, {
     method: "POST",
     body: JSON.stringify({
@@ -31,8 +30,9 @@ function escappStart(roomNumber, email, password) {
     },
   })
     .then((res) => res.json())
-    .then((res) => console.log(res));
+    .then((res) => { response = res; return response;});
 }
+
 
 function createPuzzle(prompt) {
   let puzzle = createElement('span',prompt);
@@ -40,10 +40,9 @@ function createPuzzle(prompt) {
   let button = createButton("submit");
   let message = createSpan();
   createP();
-
-
   return { input: input, button: button, message: message, puzzle: puzzle };
 }
+
 
 function solve(puzzleNum, input, text, email, password) {
   const solution = input;
@@ -64,5 +63,3 @@ function solve(puzzleNum, input, text, email, password) {
     .then((res) => res.json())
     .then((res) => { console.log(res); text.html(res.msg) });
 }
-
-
