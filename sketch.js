@@ -12,6 +12,8 @@ function setup() {
   let puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
   puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
 
+
+  setInterval(()=>console.log('hello', 2000))
 }
 
 
