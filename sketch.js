@@ -3,7 +3,7 @@ let email, password, signIn, puzzle1, puzzle2, time, progress;
 function setup() {
   
   
-  var socket = io('ws://escapp.es/', {query: {
+  var socket = io('wss://escapp.es/', {query: {
   "escapeRoom": '80',
   "email": 'eslamessam3013@gmail.com',
   "token": "RHxqej6vYx2Q3zv4eD9NFm",
