@@ -1,35 +1,39 @@
 let email, password, signIn, puzzle1, puzzle2, time, progress;
 
+var ws = new WebSocket("wss://escapp-server.glitch.me");
+
+ws.onopen = function () {
+  console.log('WS connected');
+}
+
+ws.onclose = function () {
+
+}
+
+ws.onmessage = function (msg) {
+  if (msg.data.type) console.log(msg.data.type);
+  console.log(msg.data);
+}
+
+function wsSend (type, data){
+  ws.send(JSON.stringify({type: type, data}))
+}
+
 function setup() {
-  
-  
-  var socket = io('wss://escapp.es/', {query: {
-  "escapeRoom": '80',
-  "email": 'eslamessam3013@gmail.com',
-  "token": "RHxqej6vYx2Q3zv4eD9NFm",
-  // Optional (if you don't have the token)
-  // "password": 'ziCY8AgsX7u3NSh'
-  }});
 
-// socket.emit("START_PLAYING");
-socket.on("connect", (payload)=> append(payload))
+  email = select('#email');
+  password = select('#pwd');
+  signIn = select('#submit');
+  noCanvas();
+  signIn.mousePressed(()=> wsSend('connecting', {id:'80', email:email.value(), password: password.value()}));
+  createElement("h3", "Solve the puzzles to escape.");
 
-
-
-
-//   email = select('#email');
-//   password = select('#pwd');
-//   signIn = select('#submit');
-//   noCanvas();
-//   signIn.mousePressed(() => escappStart(80, email, password));
-//   createElement("h3", "Solve the puzzles to escape.");
-
-//   puzzle1 = createPuzzle("The key to escape is to look up and count. ");
-//   puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password));
-//   puzzle1.hint.mousePressed(() => puzzle1.message.html('Count the paintings on ceilings.'))
-//   puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
-//   puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
-//   puzzle2.hint.mousePressed(() => puzzle2.message.html('Look for a place where the bishop stays during worship.'))
+  puzzle1 = createPuzzle("The key to escape is to look up and count. ");
+  puzzle1.button.mousePressed(() => wsSend('SOLVE_PUZZLE', {puzzleOrder: 1, sol: puzzle1.input.value()}));
+  puzzle1.hint.mousePressed(() => puzzle1.message.html('Count the paintings on ceilings.'))
+  puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
+  puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
+  puzzle2.hint.mousePressed(() => puzzle2.message.html('Look for a place where the bishop stays during worship.'))
 
 //   createSpan('Remaining time: ');
 //   time = createElement('b', 'time')
@@ -81,15 +85,15 @@ socket.on("connect", (payload)=> append(payload))
 // }
 
 
-// function createPuzzle(prompt) {
-//   let puzzle = createElement('span', prompt);
-//   let input = createInput();
-//   let button = createButton("submit");
-//   let hint = createButton('hint')
-//   let message = createSpan();
-//   createP();
-//   return { puzzle: puzzle, input: input, button: button, hint: hint, message: message };
-// }
+function createPuzzle(prompt) {
+  let puzzle = createElement('span', prompt);
+  let input = createInput();
+  let button = createButton("submit");
+  let hint = createButton('hint')
+  let message = createSpan();
+  createP();
+  return { puzzle: puzzle, input: input, button: button, hint: hint, message: message };
+}
 
 
 // function solve(puzzleNum, input, text, email, password) {
