@@ -1,26 +1,27 @@
-let email, password, signIn, puzzle1, puzzle2, time, progress;
+let email, password;
 
 function setup() {
+  noCanvas();
   email = select('#email');
   password = select('#pwd');
-  signIn = select('#submit');
-  noCanvas();
+  let signIn = select('#submit');
   signIn.mousePressed(() => escappStart(80, email, password));
-  createElement("h3", "Solve the puzzles to escape.");
 
-  puzzle1 = createPuzzle("The key to escape is to look up and count. ");
-  puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password));
-  puzzle1.hint.mousePressed(() => puzzle1.message.html('Count the paintings on ceilings.'))
-  puzzle2 = createPuzzle("The Bishop is praying now. Where is he? ");
-  puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
-  puzzle2.hint.mousePressed(() => puzzle2.message.html('Look for a place where the bishop stays during worship.'))
+  let puzzle1 = createPuzzle(1, "The key to escape is to look up and count. ");
+  // puzzle1.button.mousePressed(() => solve(1, puzzle1.input.value(), puzzle1.message, email, password));
+ 
+  let puzzle2 = createPuzzle(2, "The Bishop is praying now. Where is he? ");
+  // puzzle2.button.mousePressed(() => solve(2, puzzle2.input.value(), puzzle2.message, email, password));
 
   createSpan('Remaining time: ');
-  time = createElement('b', 'time')
+  let time = createElement('b', 'time');
   setInterval(() => {
+
     if (password.value()) {
-      escappAuth(80, email, password);
+      escappAuth(80, email, password)
+      .then(res => time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes'));
     }
+
   }, 1000);
 
 }
@@ -29,7 +30,7 @@ function setup() {
 function escappAuth(roomNumber, email, password) {
   const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/auth";
   var response;
-  fetch(URI, {
+  return fetch(URI, {
     method: "POST",
     body: JSON.stringify({
       email: email.value(),
@@ -41,11 +42,10 @@ function escappAuth(roomNumber, email, password) {
     },
   })
     .then((res) => res.json())
-    .then((res) => {
-      console.log(res); 
-      time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes')
-    });
+    .then((res) => {return res});
 }
+
+
 function escappStart(roomNumber, email, password) {
   const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/start";
   var response;
@@ -65,22 +65,27 @@ function escappStart(roomNumber, email, password) {
 }
 
 
-function createPuzzle(prompt) {
+
+function createPuzzle(puzzleNum, prompt) {
   let puzzle = createElement('span', prompt);
   let input = createInput();
   let button = createButton("submit");
-  let hint = createButton('hint')
-  let message = createSpan();
+  let message = createSpan('Press submit');
   createP();
-  return { puzzle: puzzle, input: input, button: button, hint: hint, message: message };
+  button.mousePressed(()=> solve(puzzleNum, input.value())
+  .then(res => {
+    message.html(res.msg);
+    if (res.code == 'OK') input.attribute('disabled', 'true');
+  }))
+  return { puzzle: puzzle, input: input, button: button, message: message };
 }
 
 
-function solve(puzzleNum, input, text, email, password) {
+function solve(puzzleNum, input) {
   const solution = input;
   const URI =
     "https://escapp.es/api/escapeRooms/80/puzzles/" + puzzleNum + "/submit";
-  fetch(URI, {
+  return fetch(URI, {
     method: "POST",
     body: JSON.stringify({
       email: email.value(),
@@ -93,5 +98,5 @@ function solve(puzzleNum, input, text, email, password) {
     },
   })
     .then((res) => res.json())
-    .then((res) => { console.log(res); text.html(res.msg) });
+    .then((res) => { console.log(res); return res;});
 }
