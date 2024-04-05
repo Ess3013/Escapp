@@ -32,12 +32,13 @@ const mainSketch = (p) => {
       button: p.createButton("Ask Gemini"),
     }
     
+    let response = createElement('pre');
 
     gemini.button.mousePressed(() =>
-      run(gemini.input.value()).then((data) => {p.createElement('pre', data); p.createElement('hr')})
+      run(gemini.input.value()).then((data) => response.html(data))
     );
-    gemini.input.changed(() =>
-      run(gemini.input.value()).then((data) => {p.createElement('pre', data); p.createElement('hr')}))
+    // gemini.input.changed(() =>
+    //   run(gemini.input.value()).then((data) => {p.createElement('pre', data); p.createElement('hr')}))
   };
 
   p.draw = () => { };

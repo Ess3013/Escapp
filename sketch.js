@@ -1,4 +1,5 @@
 let email, password;
+let puzzles = [0];
 
 function setup() {
   noCanvas();
@@ -7,14 +8,9 @@ function setup() {
   let signIn = select('#submit');
   signIn.mousePressed(() => escappStart(80, email, password));
 
-  let puzzles = [0];
-
-  append(puzzles, createPuzzle(1, "The key to escape is to look up and count. "))
-
-  append(puzzles, createPuzzle(2, "The Bishop is praying now. Where is he? "))
-
-
-
+  addPuzzle(1, "The key to escape is to look up and count. ")
+  
+  addPuzzle(2, "The Bishop is praying now. Where is he? ")
 
   createSpan('Remaining time: ');
   let time = createElement('b', 'time');
@@ -75,6 +71,10 @@ function escappStart(roomNumber, email, password) {
     .then((res) => console.log(res));
 }
 
+
+function addPuzzle (puzzleNum, prompt){
+  append(puzzles, createPuzzle(puzzleNum, prompt));
+}
 
 
 function createPuzzle(puzzleNum, prompt) {
