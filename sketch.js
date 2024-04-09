@@ -3,28 +3,38 @@ let puzzles = [0];
 
 function setup() {
   noCanvas();
+  alert('Welcome to our educational escape room! \nPlease insert your Escapp email and password in their respective boxes.');
   email = select('#email');
   password = select('#pwd');
+  let start = false;
   let signIn = select('#submit');
-  signIn.mousePressed(() => escappStart(80, email, password));
+  signIn.mousePressed(() => {
+    escappStart(80, email, password);
+    start = true;
+    alert('Start the 3D model by pressing the play button in the middle. \nExplore the model by: \n - Click left mouse button and drag to Rotate. \n - Click right mouse button and drag to Pan \n - Zoom in and out using the scroll wheel.');
+    alert('- You can also explore the model by clicking on the numbered annotations to move you through the model and give you useful information about it. \n- Read the puzzles carefully and try to solve them before the time ends. \n- You can also ask Gemini for help if you need. (for example: you can describe the escape room environment to Gemini and ask for its help with the puzzles)');
+  });
 
   addPuzzle(1, "The key to escape is to look up and count. ")
-  
+
   addPuzzle(2, "The Bishop is praying now. Where is he? ")
 
   createSpan('Remaining time: ');
   let time = createElement('b', 'time');
+
   setInterval(() => {
 
-    if (password.value()) {
+    if (password.value() && start) {
       escappAuth(80, email, password)
         .then(res => {
           time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes');
           res.erState.puzzlesSolved.forEach(puzzle => {
+            console.log(res.erState);
+            puzzles[puzzle].input.value(res.erState.puzzleData[puzzle].solution);
             puzzles[puzzle].input.attribute('disabled', 'true');
             puzzles[puzzle].button.attribute('disabled', 'true');
-            puzzles[puzzle].message.html('Puzzle Solved!');
-            
+            puzzles[puzzle].message.html('Puzzle Solved! ');
+
           });
         })
     }
@@ -72,7 +82,7 @@ function escappStart(roomNumber, email, password) {
 }
 
 
-function addPuzzle (puzzleNum, prompt){
+function addPuzzle(puzzleNum, prompt) {
   append(puzzles, createPuzzle(puzzleNum, prompt));
 }
 
