@@ -22,6 +22,7 @@ async function run(inPrompt) {
 
 
 const mainSketch = (p) => {
+  
   p.setup = () => {
     p.noCanvas()
     p.createElement('hr');
@@ -31,11 +32,21 @@ const mainSketch = (p) => {
       input: p.createInput(),
       button: p.createButton("Ask Gemini"),
     }
+
+    let prompt = createElement('pre', gemini.input.value());
+    let response = createElement('pre', '');
     
-    let response = createElement('pre');
+
+    // let response = createElement('pre');
 
     gemini.button.mousePressed(() =>
-      run(gemini.input.value()).then((data) => response.html(data))
+      run(gemini.input.value()).then((data) => {
+        createElement('pre', prompt.html());
+        createElement('pre', response.html());
+        createElement('hr')
+        prompt.html('You: ' + gemini.input.value());
+        response.html('Gemini: ' + data);
+      })
     );
     // gemini.input.changed(() =>
     //   run(gemini.input.value()).then((data) => {p.createElement('pre', data); p.createElement('hr')}))
@@ -45,6 +56,8 @@ const mainSketch = (p) => {
 
 }
 
-setTimeout(() => {
-  new p5(mainSketch);
-}, 3000); 
+new p5(mainSketch);
+
+// setTimeout(() => {
+//   new p5(mainSketch);
+// }, 3000); 

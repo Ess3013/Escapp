@@ -22,6 +22,11 @@ function setup() {
   createSpan('Remaining time: ');
   let time = createElement('b', 'time');
 
+  var geminiScript = document.createElement('script');
+  geminiScript.src = "gemini.js";
+  geminiScript.type = "module";
+  document.getElementsByTagName('head')[0].appendChild(geminiScript);
+
   setInterval(() => {
 
     if (password.value() && start) {
@@ -34,7 +39,6 @@ function setup() {
             puzzles[puzzle].input.attribute('disabled', 'true');
             puzzles[puzzle].button.attribute('disabled', 'true');
             puzzles[puzzle].message.html('Puzzle Solved! ');
-
           });
         })
     }
