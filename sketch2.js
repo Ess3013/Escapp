@@ -1,5 +1,5 @@
 let email, password;
-let puzzles = [0];
+let puzzles = localStorage.getItem("puzzles");
 
 function setup() {
   noCanvas();
@@ -16,7 +16,10 @@ function setup() {
   // });
   
   email = localStorage.getItem("email");
-  email = localStorage.getItem("password");
+  password = localStorage.getItem("password");
+  console.log(email);
+  console.log(password);
+  console.log(puzzles);
 
   addPuzzle(3, "The key to escape is to look up and count. ")
 
@@ -117,8 +120,8 @@ function solve(puzzleNum, input) {
   return fetch(URI, {
     method: "POST",
     body: JSON.stringify({
-      email: email.value(),
-      password: password.value(),
+      email: email,
+      password: password,
       solution: solution,
     }),
     headers: {

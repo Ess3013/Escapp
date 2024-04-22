@@ -11,8 +11,11 @@ function setup() {
   signIn.mousePressed(() => {
     escappStart(80, email, password);
     start = true;
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
+    localStorage.setItem("email", email.value());
+    localStorage.setItem("password", password.value());
+    console.log(email.value());
+    console.log(password.value());
+    console.log(puzzles);
     alert('Start the 3D model by pressing the play button in the middle. \nExplore the model by: \n - Click left mouse button and drag to Rotate. \n - Click right mouse button and drag to Pan \n - Zoom in and out using the scroll wheel.');
     alert('- You can also explore the model by clicking on the numbered annotations to move you through the model and give you useful information about it. \n- Read the puzzles carefully and try to solve them before the time ends. \n- You can also ask Gemini for help if you need. (for example: you can describe the escape room environment to Gemini and ask for its help with the puzzles)');
   });
@@ -20,6 +23,8 @@ function setup() {
   addPuzzle(1, "The key to escape is to look up and count. ")
 
   addPuzzle(2, "The Bishop is praying now. Where is he? ")
+
+  localStorage.setItem("puzzles", puzzles);
 
   createSpan('Remaining time: ');
   let time = createElement('b', 'time');
@@ -36,7 +41,10 @@ function setup() {
     if (password.value() && start) {
       escappAuth(80, email, password)
         .then(res => {
+
           time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes');
+          // if (res.erState.puzzlesSolved.length > 1) location.replace('room2.html');
+
           res.erState.puzzlesSolved.forEach(puzzle => {
             console.log(res.erState);
             puzzles[puzzle].input.value(res.erState.puzzleData[puzzle].solution);
