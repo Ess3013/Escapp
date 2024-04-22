@@ -3,23 +3,24 @@ let puzzles = [0];
 
 function setup() {
   noCanvas();
-  alert('Welcome to our educational escape room! \nPlease insert your Escapp email and password in their respective boxes.');
-  email = select('#email');
-  password = select('#pwd');
-  let start = false;
-  let signIn = select('#submit');
-  signIn.mousePressed(() => {
-    escappStart(80, email, password);
-    start = true;
-    localStorage.setItem("email", email);
-    localStorage.setItem("password", password);
-    alert('Start the 3D model by pressing the play button in the middle. \nExplore the model by: \n - Click left mouse button and drag to Rotate. \n - Click right mouse button and drag to Pan \n - Zoom in and out using the scroll wheel.');
-    alert('- You can also explore the model by clicking on the numbered annotations to move you through the model and give you useful information about it. \n- Read the puzzles carefully and try to solve them before the time ends. \n- You can also ask Gemini for help if you need. (for example: you can describe the escape room environment to Gemini and ask for its help with the puzzles)');
-  });
+  // alert('Welcome to our educational escape room! \nPlease insert your Escapp email and password in their respective boxes.');
+  // email = select('#email');
+  // password = select('#pwd');
+  // let start = false;
+  // let signIn = select('#submit');
+  // signIn.mousePressed(() => {
+  //   escappStart(80, email, password);
+  //   start = true;
+  //   alert('Start the 3D model by pressing the play button in the middle. \nExplore the model by: \n - Click left mouse button and drag to Rotate. \n - Click right mouse button and drag to Pan \n - Zoom in and out using the scroll wheel.');
+  //   alert('- You can also explore the model by clicking on the numbered annotations to move you through the model and give you useful information about it. \n- Read the puzzles carefully and try to solve them before the time ends. \n- You can also ask Gemini for help if you need. (for example: you can describe the escape room environment to Gemini and ask for its help with the puzzles)');
+  // });
+  
+  email = localStorage.getItem("email");
+  email = localStorage.getItem("password");
 
-  addPuzzle(1, "The key to escape is to look up and count. ")
+  addPuzzle(3, "The key to escape is to look up and count. ")
 
-  addPuzzle(2, "The Bishop is praying now. Where is he? ")
+  addPuzzle(4, "The Bishop is praying now. Where is he? ")
 
   createSpan('Remaining time: ');
   let time = createElement('b', 'time');
@@ -29,7 +30,6 @@ function setup() {
   geminiScript.type = "module";
   document.getElementsByTagName('head')[0].appendChild(geminiScript);
 
-  setTimeout(()=> location.replace('room2.html'), 5000);
 
   setInterval(() => {
 
