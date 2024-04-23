@@ -34,7 +34,7 @@ function setup() {
   geminiScript.type = "module";
   document.getElementsByTagName('head')[0].appendChild(geminiScript);
 
-  setTimeout(()=> location.replace('room2.html'), 5000);
+  // setTimeout(() => location.replace('room2.html'), 5000);
 
   setInterval(() => {
 
