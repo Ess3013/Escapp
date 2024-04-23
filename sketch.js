@@ -43,7 +43,7 @@ function setup() {
         .then(res => {
 
           time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes');
-          // if (res.erState.puzzlesSolved.length > 1) location.replace('room2.html');
+          if (res.erState.puzzlesSolved.length > 1) location.replace('room2.html');
 
           res.erState.puzzlesSolved.forEach(puzzle => {
             console.log(res.erState);
