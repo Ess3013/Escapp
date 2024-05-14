@@ -11,32 +11,219 @@
 
   <script src="libraries/p5.min.js"></script>
   <script src="libraries/p5.sound.min.js"></script>
-  <script src="sketch.js"></script>
 </head>
 
-<body>
+<body style="background-color:floralwhite;">
   <h1>Boris and Gleb Church</h1>
-  
+
   <label for="email" class="auth">Email:</label>
   <input type="email" id="email" class="auth">
   <label for="pwd" class="auth">Password:</label>
   <input type="password" id="pwd" class="auth">
   <input type="submit" id="submit" class="auth">
   <p></p>
-  
 
-  <div class="sketchfab-embed-wrapper">
-    <iframe title="Old Orthodox Church in Suzdal (inside & outside)" frameborder="0" allowfullscreen
-    mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking"
-    xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="60%"
-    height="400"
-    src="https://sketchfab.com/models/482bb6ceb53a413193c36e560885262e/embed?annotations_visible=1&annotation=1&ui_theme=dark?autostart=1">
-  </iframe>
-</div>
 
-<p></p>
+  <div class="sketchfab-embed-wrapper"> <iframe title="Old Orthodox Church in Suzdal (inside & outside)" frameborder="0"
+      allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"
+      allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport
+      execution-while-not-rendered web-share
+      src="https://sketchfab.com/models/482bb6ceb53a413193c36e560885262e/embed?autostart=1"> </iframe>
+  </div>
+  <div class="sketchfab-embed-wrapper" id="citation">
+    <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;"> <a
+        href="https://sketchfab.com/3d-models/old-orthodox-church-in-suzdal-inside-outside-482bb6ceb53a413193c36e560885262e?utm_medium=embed&utm_campaign=share-popup&utm_content=482bb6ceb53a413193c36e560885262e"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Old Orthodox Church in Suzdal
+        (inside
+        & outside) </a> by <a
+        href="https://sketchfab.com/mgv?utm_medium=embed&utm_campaign=share-popup&utm_content=482bb6ceb53a413193c36e560885262e"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Mikhail Volkov </a> on <a
+        href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=482bb6ceb53a413193c36e560885262e"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a></p>
+  </div>
 
-<h3>Solve the puzzles to escape.</h3>
+
+  <style type="text/css">
+    iframe {
+      width: 50vw;
+      height: 38vw;
+      /* 100/56.25 = 560/315 = 1.778 */
+
+    }
+
+    .sketchfab-embed-wrapper {
+      position: absolute;
+      right: 2%;
+    }
+
+    #citation {
+      top: 5%;
+    }
+  </style>
+
+  <p></p>
+
+  <h3>Solve the puzzles to escape.</h3>
+
+  <script>
+    let email, password;
+    let puzzles = [0];
+
+    function setup() {
+      noCanvas();
+      alert('Welcome to our educational escape room! \nPlease insert your Escapp email and password in their respective boxes.');
+      email = select('#email');
+      password = select('#pwd');
+      let start = false;
+      let signIn = select('#submit');
+      signIn.mousePressed(() => {
+        escappStart(80, email, password);
+        start = true;
+        localStorage.setItem("email", email.value());
+        localStorage.setItem("password", password.value());
+        console.log(email.value());
+        console.log(password.value());
+        console.log(puzzles);
+        alert('Start the 3D model by pressing the play button in the middle. \nExplore the model by: \n - Click left mouse button and drag to Rotate. \n - Click right mouse button and drag to Pan \n - Zoom in and out using the scroll wheel.');
+        alert('- You can also explore the model by clicking on the numbered annotations to move you through the model and give you useful information about it. \n- Read the puzzles carefully and try to solve them before the time ends. \n- You can also ask Gemini for help if you need. (for example: you can describe the escape room environment to Gemini and ask for its help with the puzzles)');
+      });
+
+      addPuzzle(1, "The key to escape is to look up and count. ")
+
+      addPuzzle(2, "The Bishop is praying now. Where is he? ")
+
+      createSpan('Remaining time: ');
+      let time = createElement('b', 'time');
+
+      var geminiScript = document.createElement('script');
+      geminiScript.src = "gemini.js";
+      geminiScript.type = "module";
+      document.getElementsByTagName('head')[0].appendChild(geminiScript);
+
+      setInterval(() => {
+
+        if (password.value() && start) {
+          escappAuth(80, email, password)
+            .then(res => {
+
+              time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes');
+              if (res.erState.puzzlesSolved.length > 1) {
+                setTimeout(() => {
+                  location.replace('transition.html');
+                }, 5000);
+              }
+
+
+              console.log(res.erState);
+              if (res.erState.puzzleData[1].solution != null) {
+
+                puzzles[1].input.value(res.erState.puzzleData[1].solution);
+                puzzles[1].input.attribute('disabled', 'true');
+                puzzles[1].button.attribute('disabled', 'true');
+                puzzles[1].message.html('Puzzle Solved! ');
+              }
+              if (res.erState.puzzleData[2].solution != null) {
+
+                puzzles[2].input.value(res.erState.puzzleData[2].solution);
+                puzzles[2].input.attribute('disabled', 'true');
+                puzzles[2].button.attribute('disabled', 'true');
+                puzzles[2].message.html('Puzzle Solved! ');
+              }
+
+            })
+        }
+
+      }, 1000);
+
+    }
+
+
+    function escappAuth(roomNumber, email, password) {
+      const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/auth";
+      var response;
+      return fetch(URI, {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.value(),
+          password: password.value(),
+        }),
+        headers: {
+          "Content-type": "application/json",
+          "Accept-Language": "es-ES",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => { return res });
+    }
+
+
+    function escappStart(roomNumber, email, password) {
+      const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/start";
+      var response;
+      fetch(URI, {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.value(),
+          password: password.value(),
+        }),
+        headers: {
+          "Content-type": "application/json",
+          "Accept-Language": "es-ES",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => console.log(res));
+    }
+
+
+    function addPuzzle(puzzleNum, prompt) {
+      append(puzzles, createPuzzle(puzzleNum, prompt));
+    }
+
+
+    function createPuzzle(puzzleNum, prompt) {
+      let puzzle = createElement('span', prompt);
+      let input = createInput();
+      let button = createButton("submit");
+      let message = createSpan('Press submit');
+      createP();
+      button.mousePressed(() => solve(puzzleNum, input.value())
+        .then(res => {
+          message.html(res.msg);
+          if (res.code == 'OK') input.attribute('disabled', 'true');
+        }))
+      return { puzzle: puzzle, input: input, button: button, message: message };
+    }
+
+
+    function solve(puzzleNum, input) {
+      const solution = input;
+      const URI =
+        "https://escapp.es/api/escapeRooms/80/puzzles/" + puzzleNum + "/submit";
+      return fetch(URI, {
+        method: "POST",
+        body: JSON.stringify({
+          email: email.value(),
+          password: password.value(),
+          solution: solution,
+        }),
+        headers: {
+          "Content-type": "application/json",
+          "Accept-Language": "es-ES",
+        },
+      })
+        .then((res) => res.json())
+        .then((res) => { console.log(res); return res; });
+    }
+
+
+    Storage.prototype.setObj = function (key, obj) {
+      return this.setItem(key, JSON.stringify(obj))
+    }
+    Storage.prototype.getObj = function (key) {
+      return JSON.parse(this.getItem(key))
+    }
+  </script>
 
 </body>
 

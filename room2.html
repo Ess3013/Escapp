@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 
+
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -11,41 +12,188 @@
 
   <script src="libraries/p5.min.js"></script>
   <script src="libraries/p5.sound.min.js"></script>
-  <script src="sketch2.js"></script>
 </head>
 
-<body>
+
+<body style="background-color:floralwhite;">
   <h1>Abu Simbel Temple</h1>
 
-  <!-- <label for="email" class="auth">Email:</label>
-  <input type="email" id="email" class="auth">
-  <label for="pwd" class="auth">Password:</label>
-  <input type="password" id="pwd" class="auth">
-  <input type="submit" id="submit" class="auth"> -->
-  <p></p>
-
-
-  <div class="sketchfab-embed-wrapper">
-    <iframe title="Abu Simbel Temple (South Egypt) Rough model" frameborder="0" allowfullscreen
-      mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking"
-      xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="60%"
-      height="400"
-      src="https://sketchfab.com/models/1ab40042caaf4bb4804d07111e2ef7c0/embed?autostart=1">
-    </iframe>
+  <div class="sketchfab-embed-wrapper"> <iframe title="Abu Simbel Temple (South Egypt) Rough model" frameborder="0"
+      allowfullscreen mozallowfullscreen="true" webkitallowfullscreen="true"
+      allow="autoplay; fullscreen; xr-spatial-tracking" xr-spatial-tracking execution-while-out-of-viewport
+      execution-while-not-rendered web-share
+      src="https://sketchfab.com/models/1ab40042caaf4bb4804d07111e2ef7c0/embed?autostart=1"> </iframe>
   </div>
-  <!-- 
-  <div class="sketchfab-embed-wrapper">
-    <iframe title="Old Orthodox Church in Suzdal (inside & outside)" frameborder="0" allowfullscreen
-      mozallowfullscreen="true" webkitallowfullscreen="true" allow="autoplay; fullscreen; xr-spatial-tracking"
-      xr-spatial-tracking execution-while-out-of-viewport execution-while-not-rendered web-share width="60%"
-      height="400"
-      src="https://sketchfab.com/models/482bb6ceb53a413193c36e560885262e/embed?annotations_visible=1&annotation=1&ui_theme=dark">
-    </iframe>
-  </div> -->
 
-  <p></p>
+  <div class="sketchfab-embed-wrapper" id="citation">
+    <p style="font-size: 13px; font-weight: normal; margin: 5px; color: #4A4A4A;"> <a
+        href="https://sketchfab.com/3d-models/abu-simbel-temple-south-egypt-rough-model-1ab40042caaf4bb4804d07111e2ef7c0?utm_medium=embed&utm_campaign=share-popup&utm_content=1ab40042caaf4bb4804d07111e2ef7c0"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Abu Simbel Temple (South Egypt) Rough
+        model </a> by <a
+        href="https://sketchfab.com/tornado2011?utm_medium=embed&utm_campaign=share-popup&utm_content=1ab40042caaf4bb4804d07111e2ef7c0"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;"> Mohamed Abdelaziz </a> on <a
+        href="https://sketchfab.com?utm_medium=embed&utm_campaign=share-popup&utm_content=1ab40042caaf4bb4804d07111e2ef7c0"
+        target="_blank" rel="nofollow" style="font-weight: bold; color: #1CAAD9;">Sketchfab</a></p>
+  </div>
+
+  <style type="text/css">
+    iframe {
+      width: 50vw;
+      height: 38vw;
+      /* 100/56.25 = 560/315 = 1.778 */
+
+    }
+
+    .sketchfab-embed-wrapper {
+      position: absolute;
+      right: 2%;
+    }
+
+    #citation {
+      top: 5%;
+    }
+  </style>
 
   <h3>Solve the puzzles to escape.</h3>
+
+<script>
+  let email, password;
+let puzzles = [0, 1, 2];
+
+function setup() {
+  noCanvas();
+
+  email = localStorage.getItem("email");
+  password = localStorage.getItem("password");
+
+  console.log(email);
+  console.log(password);
+  console.log(puzzles);
+  console.log(typeof (puzzles));
+
+  addPuzzle(4, "I stand between the greats. I have the key to escape. Who am I? ")
+
+  console.log(puzzles);
+
+  createSpan('Remaining time: ');
+  let time = createElement('b', 'time');
+
+  var geminiScript = document.createElement('script');
+  geminiScript.src = "gemini.js";
+  geminiScript.type = "module";
+  document.getElementsByTagName('head')[0].appendChild(geminiScript);
+
+  setInterval(() => {
+
+    if (password) {
+      escappAuth(80, email, password)
+        .then(res => {
+          time.html((res.erState.remainingTime / 60).toFixed(2) + ' minutes');
+          console.log(res.erState);
+          if (res.erState.puzzlesSolved.length > 2) {
+            puzzles[3].input.value(res.erState.puzzleData[4].solution);
+            puzzles[3].input.attribute('disabled', 'true');
+            puzzles[3].button.attribute('disabled', 'true');
+            puzzles[3].message.html('Puzzle Solved! ');
+
+            setTimeout(() => {
+              location.replace('Finish.html');
+            }, 5000);
+          }
+        })
+    }
+  }
+
+    , 1000);
+
+}
+
+
+function escappAuth(roomNumber, email, password) {
+  const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/auth";
+  var response;
+  return fetch(URI, {
+    method: "POST",
+    body: JSON.stringify({
+      email: email,
+      password: password,
+    }),
+    headers: {
+      "Content-type": "application/json",
+      "Accept-Language": "es-ES",
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => { return res });
+}
+
+
+function escappStart(roomNumber, email, password) {
+  const URI = "https://escapp.es/api/escapeRooms/" + roomNumber + "/start";
+  var response;
+  fetch(URI, {
+    method: "POST",
+    body: JSON.stringify({
+      email: email,
+      password: password,
+    }),
+    headers: {
+      "Content-type": "application/json",
+      "Accept-Language": "es-ES",
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => console.log(res));
+}
+
+
+function addPuzzle(puzzleNum, prompt) {
+  append(puzzles, createPuzzle(puzzleNum, prompt));
+}
+
+
+function createPuzzle(puzzleNum, prompt) {
+  let puzzle = createElement('span', prompt);
+  let input = createInput();
+  let button = createButton("submit");
+  let message = createSpan('Press submit');
+  createP();
+  button.mousePressed(() => solve(puzzleNum, input.value())
+    .then(res => {
+      message.html(res.msg);
+      if (res.code == 'OK') input.attribute('disabled', 'true');
+    }))
+  return { puzzle: puzzle, input: input, button: button, message: message };
+}
+
+
+function solve(puzzleNum, input) {
+  const solution = input;
+  const URI =
+    "https://escapp.es/api/escapeRooms/80/puzzles/" + puzzleNum + "/submit";
+  return fetch(URI, {
+    method: "POST",
+    body: JSON.stringify({
+      email: email,
+      password: password,
+      solution: solution,
+    }),
+    headers: {
+      "Content-type": "application/json",
+      "Accept-Language": "es-ES",
+    },
+  })
+    .then((res) => res.json())
+    .then((res) => { console.log(res); return res; });
+}
+
+Storage.prototype.setObj = function (key, obj) {
+  return this.setItem(key, JSON.stringify(obj))
+}
+Storage.prototype.getObj = function (key) {
+  return JSON.parse(this.getItem(key))
+}
+</script>
 
 </body>
 
